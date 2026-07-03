@@ -11,7 +11,6 @@ class Produto_Controller:
             os.system('cls' if os.name == 'nt' else 'clear')
             opcao = self.view.renderizar_menu()
             if opcao == 0:
-                self.view.exibir_mensagem("Saindo do sistema...")
                 break
             elif opcao == 1:
                 try:
@@ -21,12 +20,12 @@ class Produto_Controller:
                     self.view.exibir_mensagem("Produto cadastrado com sucesso!")
                 except ValueError:
                     self.view.exibir_mensagem("Erro: Entrada inválida. Tente novamente.", False)
-                input("Pressione Enter para continuar...")
+                
             
             elif opcao == 2:
                 produtos = self.dao.get_all()
                 self.view.exibir_produtos(produtos)
-                #input("Pressione Enter para continuar...")
+                self.view.aguardar_entrada()
             
             elif opcao == 3:
                 try:
@@ -43,7 +42,7 @@ class Produto_Controller:
                         self.view.exibir_mensagem("Produto não encontrado.", False) 
                 except ValueError as e:
                     self.view.exibir_mensagem(f"Erro: {str(e)}", False)
-                input("Pressione Enter para continuar...")
+                
             
             elif opcao == 4:
                 try:
@@ -57,7 +56,7 @@ class Produto_Controller:
                         self.view.exibir_mensagem("Produto não encontrado.", False)
                 except ValueError:
                     self.view.exibir_mensagem("Erro: ID inválido", False)
-                input("Pressione Enter para continuar...")
+                
             else:
                 self.view.exibir_mensagem("Opção inválida. Tente novamente.", False)
-                input("Pressione Enter para continuar...")
+                

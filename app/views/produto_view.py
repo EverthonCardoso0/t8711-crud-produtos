@@ -43,5 +43,9 @@ class Produto_Terminal_View:
     def exibir_mensagem(self, mensagem, sucesso=True):
         cor = Fore.GREEN if sucesso else Fore.RED
         print(cor + f"\n[STATUS] {mensagem}\n")
+        self.aguardar_entrada()
+
+    def aguardar_entrada(self):
+        input(Fore.WHITE + "Pressione Enter para continuar...")
 
 
