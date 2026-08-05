@@ -24,12 +24,12 @@ from app.controllers.fornecedor_controller import Fornecedor_Controller
 
 # Componentes de Usuários
 from app.dao.usuario_dao import Usuario_DAO
-from app.views.usuario_view import Usuario_Terminal_View
+from app.views.usuario_view import Usuario_View
 from app.controllers.usuario_controller import Usuario_Controller
 
 # Componentes de Clientes
 from app.dao.cliente_dao import Cliente_DAO
-from app.views.cliente_view import Cliente_Terminal_View
+from app.views.cliente_view import Cliente_View
 from app.controllers.cliente_controller import Cliente_Controller
 
 import tkinter as tk
@@ -111,7 +111,7 @@ class ErpApplication:
             dao=self._dao_usuarios,
             cidade_dao=self._dao_cidades,
             estado_dao=self._dao_estados,
-            view=Usuario_Terminal_View()
+            view=None
         )
 
         # ===========================
@@ -127,7 +127,7 @@ class ErpApplication:
             dao=self._dao_clientes,
             cidade_dao=self._dao_cidades,
             estado_dao=self._dao_estados,
-            view=Cliente_Terminal_View()
+            view=None
         )
 
     def _renderizar_menu_principal(self):
@@ -179,12 +179,20 @@ class ErpApplication:
                 
 
             elif opcao == 3:
-
-                self._ctrl_usuarios.inicializar_sistema()
+                janela_usuarios = tk.Tk()
+                self._ctrl_usuarios.view = Usuario_View(
+                    janela_usuarios,
+                    self._ctrl_usuarios
+                )
+                self._ctrl_usuarios.view.iniciar()
 
             elif opcao == 4:
-
-                self._ctrl_clientes.inicializar_sistema()
+                janela_clientes = tk.Tk()
+                self._ctrl_clientes.view = Cliente_View(
+                    janela_clientes,
+                    self._ctrl_clientes
+                )
+                self._ctrl_clientes.view.iniciar()
 
             elif opcao == 5:
                 janela_estados = tk.Tk()
