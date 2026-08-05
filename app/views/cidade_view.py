@@ -352,4 +352,3 @@ class Cidade_View:
     def iniciar(self):
         self.controller.carregar_estados()
         self.controller.get_all()
-        self.root.mainloop()

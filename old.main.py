@@ -1,4 +1,5 @@
-from colorama import init
+import os
+from colorama import init, Fore, Style
 from app.core.database import Database
 
 # Componentes de Produtos
@@ -32,8 +33,6 @@ from app.views.cliente_view import Cliente_View
 from app.controllers.cliente_controller import Cliente_Controller
 
 import tkinter as tk
-
-
 class ErpApplication:
 
     def __init__(self):
@@ -41,17 +40,6 @@ class ErpApplication:
         init(autoreset=True)
 
         self._database = Database()
-
-        self._root = tk.Tk()
-
-        self._janela_estados = None
-        self._janela_cidades = None
-        self._janela_fornecedores = None
-        self._janela_produtos = None
-        self._janela_usuarios = None
-        self._janela_clientes = None
-
-        self._configurar_janela()
 
         # ===========================
         # ESTADOS
@@ -92,6 +80,8 @@ class ErpApplication:
             dao=self._dao_fornecedores,
             view=None
         )
+
+
 
         # ===========================
         # PRODUTOS
@@ -140,100 +130,94 @@ class ErpApplication:
             view=None
         )
 
-        self._criar_menu()
+    def _renderizar_menu_principal(self):
 
-    def _configurar_janela(self):
-        self._root.title("Sistema Corporativo ERP")
-        self._root.state("zoomed")
+        os.system("cls" if os.name == "nt" else "clear")
 
-    def _criar_menu(self):
+        print(Fore.GREEN + Style.BRIGHT + "=== SISTEMA CORPORATIVO ERP ===")
+        print("1 - Gerenciar Produtos")
+        print("2 - Gerenciar Fornecedores")
+        print("3 - Gerenciar Usuários")
+        print("4 - Gerenciar Clientes")
+        print("5 - Gerenciar Estados")
+        print("6 - Gerenciar Cidades")
+        print("0 - Sair do Sistema")
+        print(Fore.GREEN + "=" * 34)
 
-        menu_principal = tk.Menu(self._root)
-
-        menu_cadastros_basicos = tk.Menu(menu_principal, tearoff=0)
-        menu_cadastros_basicos.add_command(
-            label="Estados",
-            command=self._abrir_estados
-        )
-        menu_cadastros_basicos.add_command(
-            label="Cidades",
-            command=self._abrir_cidades
-        )
-        menu_principal.add_cascade(
-            label="Cadastros básicos",
-            menu=menu_cadastros_basicos
-        )
-
-        menu_acessos = tk.Menu(menu_principal, tearoff=0)
-        menu_acessos.add_command(
-            label="Usuários",
-            command=self._abrir_usuarios
-        )
-        menu_principal.add_cascade(
-            label="Acessos",
-            menu=menu_acessos
-        )
-
-        menu_gestao_estoque = tk.Menu(menu_principal, tearoff=0)
-        menu_gestao_estoque.add_command(
-            label="Clientes",
-            command=self._abrir_clientes
-        )
-        menu_gestao_estoque.add_command(
-            label="Fornecedores",
-            command=self._abrir_fornecedores
-        )
-        menu_gestao_estoque.add_command(
-            label="Produtos",
-            command=self._abrir_produtos
-        )
-        menu_principal.add_cascade(
-            label="Gestão de estoque",
-            menu=menu_gestao_estoque
-        )
-
-        menu_principal.add_command(
-            label="Sair",
-            command=self._root.destroy
-        )
-
-        self._root.config(menu=menu_principal)
-
-    def _abrir_janela(self, atributo_janela, classe_view, controller):
-
-        janela_existente = getattr(self, atributo_janela)
-
-        if janela_existente is not None and janela_existente.winfo_exists():
-            janela_existente.lift()
-            janela_existente.focus_force()
-            return
-
-        janela = tk.Toplevel(self._root)
-        setattr(self, atributo_janela, janela)
-
-        controller.view = classe_view(janela, controller)
-        controller.view.iniciar()
-
-    def _abrir_estados(self):
-        self._abrir_janela("_janela_estados", Estado_View, self._ctrl_estados)
-
-    def _abrir_cidades(self):
-        self._abrir_janela("_janela_cidades", Cidade_View, self._ctrl_cidades)
-
-    def _abrir_fornecedores(self):
-        self._abrir_janela("_janela_fornecedores", Fornecedor_View, self._ctrl_fornecedores)
-
-    def _abrir_produtos(self):
-        self._abrir_janela("_janela_produtos", Produto_View, self._ctrl_produtos)
-
-    def _abrir_usuarios(self):
-        self._abrir_janela("_janela_usuarios", Usuario_View, self._ctrl_usuarios)
-
-    def _abrir_clientes(self):
-        self._abrir_janela("_janela_clientes", Cliente_View, self._ctrl_clientes)
+        try:
+            return int(input("Escolha o módulo: "))
+        except ValueError:
+            return -1
 
     def run(self):
-        self._root.mainloop()
+
+
+        while True:
+
+            opcao = self._renderizar_menu_principal()
+
+            if opcao == 0:
+
+                print("\nEncerrando sistema corporativo...")
+                break
+
+            elif opcao == 1:
+                janela_produtos = tk.Tk()
+                self._ctrl_produtos.view = Produto_View(
+                    janela_produtos,
+                    self._ctrl_produtos
+                )
+                self._ctrl_produtos.view.iniciar()
+
+            elif opcao == 2:
+                janela_fornecedores = tk.Tk()
+                self._ctrl_fornecedores.view = Fornecedor_View(
+                    janela_fornecedores,
+                    self._ctrl_fornecedores
+                )
+                self._ctrl_fornecedores.view.iniciar()
+
+
+            elif opcao == 3:
+                janela_usuarios = tk.Tk()
+                self._ctrl_usuarios.view = Usuario_View(
+                    janela_usuarios,
+                    self._ctrl_usuarios
+                )
+                self._ctrl_usuarios.view.iniciar()
+
+            elif opcao == 4:
+                janela_clientes = tk.Tk()
+                self._ctrl_clientes.view = Cliente_View(
+                    janela_clientes,
+                    self._ctrl_clientes
+                )
+                self._ctrl_clientes.view.iniciar()
+
+            elif opcao == 5:
+                janela_estados = tk.Tk()
+                self._ctrl_estados.view = Estado_View(
+                    janela_estados,
+                    self._ctrl_estados
+                )
+                self._ctrl_estados.view.iniciar()
+
+            elif opcao == 6:
+                janela_cidades = tk.Tk()
+                self._ctrl_cidades.view = Cidade_View(
+                    janela_cidades,
+                    self._ctrl_cidades
+                )
+                self._ctrl_cidades.view.iniciar()
+
+            else:
+
+                print(Fore.RED + "\nOpção inválida!")
+
+                input(
+                    Fore.WHITE +
+                    "Pressione Enter para continuar..."
+                )
 
 
 if __name__ == "__main__":

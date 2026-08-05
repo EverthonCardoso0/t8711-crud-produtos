@@ -336,4 +336,3 @@ class Estado_View:
 
     def iniciar(self):
         self.controller.get_all()
-        self.root.mainloop()
