@@ -9,6 +9,7 @@ class Estado_Controller:
         self.view = view
 
     def save(self):
+        self.view.limpar_campos()
 
         try:
 
