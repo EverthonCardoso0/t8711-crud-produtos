@@ -460,7 +460,8 @@ class Usuario_View:
 
         return messagebox.askyesno(
             "Confirmação",
-            "Deseja realmente excluir este usuário?"
+            "Deseja realmente excluir este usuário?",
+            parent=self.root
         )
 
     def ler_dados_usuario(self):
@@ -479,12 +480,14 @@ class Usuario_View:
         if sucesso:
             messagebox.showinfo(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
         else:
             messagebox.showerror(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
     def exibir_usuarios(self, usuarios):
 

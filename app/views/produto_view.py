@@ -390,7 +390,8 @@ class Produto_View:
 
         return messagebox.askyesno(
             "Confirmação",
-            "Deseja realmente excluir este produto?"
+            "Deseja realmente excluir este produto?",
+            parent=self.root
         )
 
     def ler_dados_produto(self):
@@ -407,12 +408,14 @@ class Produto_View:
         if sucesso:
             messagebox.showinfo(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
         else:
             messagebox.showerror(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
     def exibir_produtos(self, produtos):
 

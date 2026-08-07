@@ -260,7 +260,8 @@ class Categoria_View:
 
         return messagebox.askyesno(
             "Confirmação",
-            "Deseja realmente excluir esta categoria?"
+            "Deseja realmente excluir esta categoria?",
+            parent=self.root
         )
 
     def ler_dados_categoria(self):
@@ -270,12 +271,14 @@ class Categoria_View:
         if sucesso:
             messagebox.showinfo(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
         else:
             messagebox.showerror(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
     def exibir_categorias(self, categorias):
 

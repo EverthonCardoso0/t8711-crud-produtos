@@ -297,7 +297,8 @@ class Estado_View:
 
         return messagebox.askyesno(
             "Confirmação",
-            "Deseja realmente excluir este estado?"
+            "Deseja realmente excluir este estado?",
+            parent=self.root
         )
 
     def ler_dados_estado(self):
@@ -309,12 +310,14 @@ class Estado_View:
         if sucesso:
             messagebox.showinfo(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
         else:
             messagebox.showerror(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
     def exibir_estados(self, estados):
 

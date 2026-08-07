@@ -461,7 +461,8 @@ class Cliente_View:
 
         return messagebox.askyesno(
             "Confirmação",
-            "Deseja realmente excluir este cliente?"
+            "Deseja realmente excluir este cliente?",
+            parent=self.root
         )
 
     def ler_dados_cliente(self):
@@ -480,12 +481,14 @@ class Cliente_View:
         if sucesso:
             messagebox.showinfo(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
         else:
             messagebox.showerror(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
     def exibir_clientes(self, clientes):
 

@@ -351,7 +351,8 @@ class Fornecedor_View:
 
         return messagebox.askyesno(
             "Confirmação",
-            "Deseja realmente excluir este fornecedor?"
+            "Deseja realmente excluir este fornecedor?",
+            parent=self.root
         )
 
     def ler_dados_fornecedor(self):
@@ -365,12 +366,14 @@ class Fornecedor_View:
         if sucesso:
             messagebox.showinfo(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
         else:
             messagebox.showerror(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
     def exibir_fornecedores(self, fornecedores):
 

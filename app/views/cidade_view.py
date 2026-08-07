@@ -309,7 +309,8 @@ class Cidade_View:
 
         return messagebox.askyesno(
             "Confirmação",
-            "Deseja realmente excluir esta cidade?"
+            "Deseja realmente excluir esta cidade?",
+            parent=self.root
         )
 
     def ler_dados_cidade(self):
@@ -324,12 +325,14 @@ class Cidade_View:
         if sucesso:
             messagebox.showinfo(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
         else:
             messagebox.showerror(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
     def exibir_cidades(self, cidades):
 
