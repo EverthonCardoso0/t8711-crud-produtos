@@ -6,6 +6,11 @@ from app.dao.produto_dao import Produto_DAO
 from app.views.produto_view import Produto_View
 from app.controllers.produto_controller import Produto_Controller
 
+# Componentes de Categorias
+from app.dao.categoria_dao import Categoria_DAO
+from app.views.categoria_view import Categoria_View
+from app.controllers.categoria_controller import Categoria_Controller
+
 # Componentes de Estados
 from app.dao.estado_dao import Estado_DAO
 from app.views.estado_view import Estado_View
@@ -48,6 +53,7 @@ class ErpApplication:
         self._janela_cidades = None
         self._janela_fornecedores = None
         self._janela_produtos = None
+        self._janela_categorias = None
         self._janela_usuarios = None
         self._janela_clientes = None
 
@@ -105,6 +111,19 @@ class ErpApplication:
         self._ctrl_produtos = Produto_Controller(
             dao=self._dao_produtos,
             fornecedor_dao=self._dao_fornecedores,
+            view=None
+        )
+
+        # ===========================
+        # CATEGORIAS
+        # ===========================
+
+        self._dao_categorias = Categoria_DAO(
+            self._database
+        )
+
+        self._ctrl_categorias = Categoria_Controller(
+            dao=self._dao_categorias,
             view=None
         )
 
@@ -187,6 +206,10 @@ class ErpApplication:
             label="Produtos",
             command=self._abrir_produtos
         )
+        menu_gestao_estoque.add_command(
+            label="Categorias",
+            command=self._abrir_categorias
+        )
         menu_principal.add_cascade(
             label="Gestão de estoque",
             menu=menu_gestao_estoque
@@ -225,6 +248,9 @@ class ErpApplication:
 
     def _abrir_produtos(self):
         self._abrir_janela("_janela_produtos", Produto_View, self._ctrl_produtos)
+
+    def _abrir_categorias(self):
+        self._abrir_janela("_janela_categorias", Categoria_View, self._ctrl_categorias)
 
     def _abrir_usuarios(self):
         self._abrir_janela("_janela_usuarios", Usuario_View, self._ctrl_usuarios)
