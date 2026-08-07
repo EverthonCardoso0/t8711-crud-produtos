@@ -1,4 +1,3 @@
-import os
 from app.models.fornecedor import Fornecedor
 
 class Fornecedor_Controller:
@@ -105,25 +104,3 @@ class Fornecedor_Controller:
             view_categorias.fechar()
         except Exception as e:
             view_categorias.exibir_mensagem("Não foi possível salvar as categorias do fornecedor.", False)
-
-    def inicializar_sistema(self):
-        while True:
-            os.system('cls' if os.name == 'nt' else 'clear')
-            opcao = self.view.renderizar_menu()
-            if opcao == 0:
-                break
-            elif opcao == 1:
-                self.save()
-            
-            elif opcao == 2:
-                self.get_all()
-            
-            elif opcao == 3:
-                self.update()
-                
-            elif opcao == 4:
-                self.delete()
-                
-            else:
-                self.view.exibir_mensagem("Opção inválida. Tente novamente.", False)
-                

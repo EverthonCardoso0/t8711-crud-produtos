@@ -21,9 +21,9 @@ class Fornecedor_DAO(DAO):
             conexao.commit()
             fornecedor.id = cursor.lastrowid
             return fornecedor
-        except Exception as e:
+        except Exception:
             conexao.rollback()
-            raise e
+            raise
         finally:
             self.desconectar(cursor, conexao)
 
@@ -56,11 +56,9 @@ class Fornecedor_DAO(DAO):
                     )
                 )
             return fornecedores
-        except Exception as e:
-            raise e
         finally:
             self.desconectar(cursor, conexao)
-    
+
     def get_by_id(self, id):
         conexao, cursor = self.conectar()
         try:
@@ -87,12 +85,8 @@ class Fornecedor_DAO(DAO):
                 registro[3],
                 registro[4]
             )
-        except Exception as e:
-            conexao.rollback()
-            raise e
         finally:
             self.desconectar(cursor, conexao)
-
 
     def update(self, fornecedor):
         conexao, cursor = self.conectar()
@@ -116,9 +110,9 @@ class Fornecedor_DAO(DAO):
             conexao.commit()
             sucesso = cursor.rowcount > 0
             return sucesso
-        except Exception as e:
+        except Exception:
             conexao.rollback()
-            raise e
+            raise
         finally:
             self.desconectar(cursor, conexao)
 
@@ -133,8 +127,8 @@ class Fornecedor_DAO(DAO):
             conexao.commit()
             sucesso = cursor.rowcount > 0
             return sucesso
-        except Exception as e:
+        except Exception:
             conexao.rollback()
-            raise e
+            raise
         finally:
             self.desconectar(cursor, conexao)

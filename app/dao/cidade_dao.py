@@ -41,10 +41,10 @@ class Cidade_DAO(DAO):
 
             return cidade
 
-        except Exception as e:
+        except Exception:
 
             conexao.rollback()
-            raise e
+            raise
 
         finally:
 
@@ -175,9 +175,9 @@ class Cidade_DAO(DAO):
             conexao.commit()
             return cursor.rowcount > 0
 
-        except Exception as e:
+        except Exception:
             conexao.rollback()
-            raise e
+            raise
         finally:
             self.desconectar(cursor, conexao)
 
@@ -193,8 +193,8 @@ class Cidade_DAO(DAO):
             conexao.commit()
             return cursor.rowcount > 0
 
-        except Exception as e:
+        except Exception:
             conexao.rollback()
-            raise e
+            raise
         finally:
             self.desconectar(cursor, conexao)

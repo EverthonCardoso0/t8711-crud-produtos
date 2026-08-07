@@ -103,33 +103,3 @@ class Cliente_Controller:
                 self.view.exibir_mensagem("Cliente não encontrado.", False)
         except Exception as e:
             self.view.exibir_mensagem("Problemas ao excluir cliente", False)
-
-    def inicializar_sistema(self):
-
-        while True:
-
-            opcao = self.view.renderizar_menu()
-
-            match opcao:
-
-                case 1:
-                    self.save()
-
-                case 2:
-                    self.get_all()
-
-                case 3:
-                    self.update()
-
-                case 4:
-                    self.delete()
-
-                case 0:
-                    break
-
-                case _:
-
-                    self.view.exibir_mensagem(
-                        "Opção inválida.",
-                        False
-                    )

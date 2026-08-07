@@ -1,5 +1,3 @@
-import os
-
 from app.models.usuario import Usuario
 from app.core.data_utils import Data_Utils
 
@@ -100,33 +98,3 @@ class Usuario_Controller:
                 self.view.exibir_mensagem("Usuário não encontrado.", False)
         except Exception as e:
             self.view.exibir_mensagem("Problemas ao excluir usuário", False)
-
-    def inicializar_sistema(self):
-
-        while True:
-
-            os.system("cls" if os.name == "nt" else "clear")
-
-            opcao = self.view.renderizar_menu()
-
-            if opcao == 0:
-                break
-
-            elif opcao == 1:
-                self.save()
-
-            elif opcao == 2:
-                self.get_all()
-
-            elif opcao == 3:
-                self.update()
-
-            elif opcao == 4:
-                self.delete()
-
-            else:
-
-                self.view.exibir_mensagem(
-                    "Opção inválida. Tente novamente.",
-                    False
-                )

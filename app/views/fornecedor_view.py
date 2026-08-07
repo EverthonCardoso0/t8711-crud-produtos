@@ -49,6 +49,10 @@ class Fornecedor_View:
             pady = 5,
             sticky = "ew"
         )
+        self.frm_dados.grid_columnconfigure(0, weight=0)
+        self.frm_dados.grid_columnconfigure(1, weight=1)
+        self.frm_dados.grid_columnconfigure(2, weight=0)
+        self.frm_dados.grid_columnconfigure(3, weight=1)
         self.lbl_id = tk.Label(
             self.frm_dados,
             text = "ID:"

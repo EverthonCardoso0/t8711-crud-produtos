@@ -1,4 +1,3 @@
-import os
 from app.models.estado import Estado
 
 
@@ -72,24 +71,3 @@ class Estado_Controller:
                 self.view.exibir_mensagem("Estado não encontrado.", False)
         except Exception as e:
             self.view.exibir_mensagem("Problemas ao excluir estado", False)
-
-    def inicializar_sistema(self):
-        while True:
-            os.system('cls' if os.name == 'nt' else 'clear')
-            opcao = self.view.renderizar_menu()
-            if opcao == 0:
-                break
-            elif opcao == 1:
-                self.save()
-
-            elif opcao == 2:
-                self.get_all()
-
-            elif opcao == 3:
-                self.update()
-
-            elif opcao == 4:
-                self.delete()
-
-            else:
-                self.view.exibir_mensagem("Opção inválida. Tente novamente.", False)

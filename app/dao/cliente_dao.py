@@ -47,10 +47,10 @@ class Cliente_DAO(DAO):
 
             return cliente
 
-        except Exception as e:
+        except Exception:
 
             conexao.rollback()
-            raise e
+            raise
 
         finally:
 
@@ -101,10 +101,6 @@ class Cliente_DAO(DAO):
 
             return clientes
 
-        except Exception as e:
-
-            raise e
-
         finally:
 
             self.desconectar(cursor, conexao)
@@ -147,10 +143,6 @@ class Cliente_DAO(DAO):
                 cidade
             )
 
-        except Exception as e:
-
-            raise e
-
         finally:
 
             self.desconectar(cursor, conexao)
@@ -187,10 +179,10 @@ class Cliente_DAO(DAO):
 
             return cursor.rowcount > 0
 
-        except Exception as e:
+        except Exception:
 
             conexao.rollback()
-            raise e
+            raise
 
         finally:
 
@@ -214,10 +206,10 @@ class Cliente_DAO(DAO):
 
             return cursor.rowcount > 0
 
-        except Exception as e:
+        except Exception:
 
             conexao.rollback()
-            raise e
+            raise
 
         finally:
 
