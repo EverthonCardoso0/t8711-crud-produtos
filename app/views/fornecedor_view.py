@@ -1,6 +1,7 @@
 
 
 from app.models.fornecedor import Fornecedor
+from app.views.fornecedor_categoria_view import Fornecedor_Categoria_View
 
 import tkinter as tk
 from tkinter import messagebox
@@ -214,7 +215,18 @@ class Fornecedor_View:
             column = 3,
             padx = 5,
             pady = 5
-        )   
+        )
+        self.btn_categorias = tk.Button(
+            self.frm_botoes,
+            text = "Categorias",
+            width = 15
+        )
+        self.btn_categorias.grid(
+            row = 0,
+            column = 4,
+            padx = 5,
+            pady = 5
+        )
         self.btn_fechar = tk.Button(
             self.frm_botoes,
             text = "Fechar",
@@ -222,10 +234,10 @@ class Fornecedor_View:
         )
         self.btn_fechar.grid(
             row = 0,
-            column = 4,
+            column = 5,
             padx = 5,
             pady = 5
-        )    
+        )
         self.tbl_fornecedores = ttk.Treeview(
             self.root,
             height = 10
@@ -287,6 +299,9 @@ class Fornecedor_View:
         )
         self.btn_excluir.config(
             command = self.controller.delete
+        )
+        self.btn_categorias.config(
+            command = self.controller.abrir_categorias
         )
         self.btn_fechar.config(
             command = self.fechar
@@ -390,6 +405,16 @@ class Fornecedor_View:
                     fornecedor.cnpj
                 )
             )
+    def abrir_categorias(self, fornecedor, categorias_disponiveis, categorias_associadas):
+        janela_categorias = tk.Toplevel(self.root)
+        Fornecedor_Categoria_View(
+            janela_categorias,
+            self.controller,
+            fornecedor,
+            categorias_disponiveis,
+            categorias_associadas
+        )
+
     def fechar(self):
         self.root.destroy()
 

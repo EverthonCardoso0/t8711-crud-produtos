@@ -23,6 +23,7 @@ from app.controllers.cidade_controller import Cidade_Controller
 
 # Componentes de Fornecedores
 from app.dao.fornecedor_dao import Fornecedor_DAO
+from app.dao.fornecedor_categoria_dao import Fornecedor_Categoria_DAO
 from app.views.fornecedor_view import Fornecedor_View
 from app.controllers.fornecedor_controller import Fornecedor_Controller
 
@@ -87,6 +88,19 @@ class ErpApplication:
         )
 
         # ===========================
+        # CATEGORIAS
+        # ===========================
+
+        self._dao_categorias = Categoria_DAO(
+            self._database
+        )
+
+        self._ctrl_categorias = Categoria_Controller(
+            dao=self._dao_categorias,
+            view=None
+        )
+
+        # ===========================
         # FORNECEDORES
         # ===========================
 
@@ -94,8 +108,14 @@ class ErpApplication:
             self._database
         )
 
+        self._dao_fornecedor_categorias = Fornecedor_Categoria_DAO(
+            self._database
+        )
+
         self._ctrl_fornecedores = Fornecedor_Controller(
             dao=self._dao_fornecedores,
+            categoria_dao=self._dao_categorias,
+            fornecedor_categoria_dao=self._dao_fornecedor_categorias,
             view=None
         )
 
@@ -111,19 +131,6 @@ class ErpApplication:
         self._ctrl_produtos = Produto_Controller(
             dao=self._dao_produtos,
             fornecedor_dao=self._dao_fornecedores,
-            view=None
-        )
-
-        # ===========================
-        # CATEGORIAS
-        # ===========================
-
-        self._dao_categorias = Categoria_DAO(
-            self._database
-        )
-
-        self._ctrl_categorias = Categoria_Controller(
-            dao=self._dao_categorias,
             view=None
         )
 
