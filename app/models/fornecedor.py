@@ -1,11 +1,12 @@
 class Fornecedor:
-    def __init__(self, id, razao_social, nome_fantasia, cnpj, sla_atendimento):
+    def __init__(self, id, razao_social, nome_fantasia, cnpj, sla_atendimento, categorias=None):
         self._id = id
         self._razao_social = razao_social
         self._nome_fantasia = nome_fantasia
         self._cnpj = cnpj
         self._sla_atendimento = sla_atendimento
-    
+        self._categorias = categorias if categorias is not None else []
+
     def validar_sla(self, sla):
         if sla < 0:
             raise ValueError("O SLA de atendimento não pode ser negativo.")
@@ -54,6 +55,15 @@ class Fornecedor:
     @sla_atendimento.setter
     def sla_atendimento(self, novo_sla):
         self._sla_atendimento = novo_sla
+
+    # Encapsulamento das Categorias
+    @property
+    def categorias(self):
+        return self._categorias
+
+    @categorias.setter
+    def categorias(self, novas_categorias):
+        self._categorias = novas_categorias
 
     def atualizar_dados(self, nova_razao_social, novo_nome_fantasia, novo_cnpj, novo_sla):
         self.validar_sla(novo_sla)

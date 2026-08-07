@@ -405,14 +405,13 @@ class Fornecedor_View:
                     fornecedor.cnpj
                 )
             )
-    def abrir_categorias(self, fornecedor, categorias_disponiveis, categorias_associadas):
+    def abrir_categorias(self, fornecedor, categorias_disponiveis):
         janela_categorias = tk.Toplevel(self.root)
         Fornecedor_Categoria_View(
             janela_categorias,
             self.controller,
             fornecedor,
-            categorias_disponiveis,
-            categorias_associadas
+            categorias_disponiveis
         )
 
     def fechar(self):

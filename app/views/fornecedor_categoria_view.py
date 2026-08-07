@@ -11,8 +11,7 @@ class Fornecedor_Categoria_View:
         root,
         controller,
         fornecedor,
-        categorias_disponiveis,
-        categorias_associadas
+        categorias_disponiveis
     ):
         self.root = root
         self.controller = controller
@@ -20,7 +19,7 @@ class Fornecedor_Categoria_View:
         self._categorias = categorias_disponiveis
         self.configurar_janela()
         self.criar_componentes()
-        self.preencher_lista(categorias_associadas)
+        self.preencher_lista()
 
     def configurar_janela(self):
         self.root.title(f"Categorias de {self.fornecedor.nome_fantasia}")
@@ -86,10 +85,10 @@ class Fornecedor_Categoria_View:
             padx = 5
         )
 
-    def preencher_lista(self, categorias_associadas):
+    def preencher_lista(self):
 
         ids_associados = []
-        for categoria in categorias_associadas:
+        for categoria in self.fornecedor.categorias:
             ids_associados.append(categoria.id)
 
         for indice, categoria in enumerate(self._categorias):
