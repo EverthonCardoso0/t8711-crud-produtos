@@ -6,7 +6,7 @@ class Fornecedor_Categoria_DAO:
     def __init__(self, database):
         self._database = database
 
-    def get_categorias_por_fornecedor(self, id_fornecedor):
+    def get_categorias_por_fornecedor(self, fornecedor):
 
         conexao = self._database.conectar()
         cursor = conexao.cursor()
@@ -28,7 +28,7 @@ class Fornecedor_Categoria_DAO:
                         C.NOME
                   """
 
-            cursor.execute(sql, (id_fornecedor,))
+            cursor.execute(sql, (fornecedor.id,))
 
             registros = cursor.fetchall()
 
@@ -48,7 +48,7 @@ class Fornecedor_Categoria_DAO:
         finally:
             self._database.desconectar(cursor, conexao)
 
-    def substituir_categorias_do_fornecedor(self, id_fornecedor, ids_categorias):
+    def substituir_categorias_do_fornecedor(self, fornecedor, categorias):
 
         conexao = self._database.conectar()
         cursor = conexao.cursor()
@@ -60,10 +60,10 @@ class Fornecedor_Categoria_DAO:
                     DELETE FROM FORNECEDOR_CATEGORIA
                     WHERE ID_FORNECEDOR = %s
                 """,
-                (id_fornecedor,)
+                (fornecedor.id,)
             )
 
-            for id_categoria in ids_categorias:
+            for categoria in categorias:
 
                 cursor.execute(
                     """
@@ -78,7 +78,7 @@ class Fornecedor_Categoria_DAO:
                             %s
                         )
                     """,
-                    (id_fornecedor, id_categoria)
+                    (fornecedor.id, categoria.id)
                 )
 
             conexao.commit()

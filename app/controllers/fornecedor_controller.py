@@ -85,21 +85,21 @@ class Fornecedor_Controller:
             self.view.exibir_mensagem("Cadastre categorias antes de associá-las a um fornecedor.", False)
             return
         self.fornecedor_selecionado.categorias = self.fornecedor_categoria_dao.get_categorias_por_fornecedor(
-            self.fornecedor_selecionado.id
+            self.fornecedor_selecionado
         )
         self.view.abrir_categorias(
             self.fornecedor_selecionado,
             categorias_disponiveis
         )
 
-    def salvar_categorias(self, view_categorias, id_fornecedor, ids_categorias):
+    def salvar_categorias(self, view_categorias, fornecedor, categorias_selecionadas):
         try:
             self.fornecedor_categoria_dao.substituir_categorias_do_fornecedor(
-                id_fornecedor,
-                ids_categorias
+                fornecedor,
+                categorias_selecionadas
             )
-            self.fornecedor_selecionado.categorias = self.fornecedor_categoria_dao.get_categorias_por_fornecedor(
-                id_fornecedor
+            fornecedor.categorias = self.fornecedor_categoria_dao.get_categorias_por_fornecedor(
+                fornecedor
             )
             view_categorias.exibir_mensagem("Categorias do fornecedor atualizadas com sucesso!")
             view_categorias.fechar()

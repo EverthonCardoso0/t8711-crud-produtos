@@ -100,14 +100,14 @@ class Fornecedor_Categoria_View:
 
         indices_selecionados = self.lst_categorias.curselection()
 
-        ids_categorias = []
+        categorias_selecionadas = []
         for indice in indices_selecionados:
-            ids_categorias.append(self._categorias[indice].id)
+            categorias_selecionadas.append(self._categorias[indice])
 
         self.controller.salvar_categorias(
             self,
-            self.fornecedor.id,
-            ids_categorias
+            self.fornecedor,
+            categorias_selecionadas
         )
 
     def exibir_mensagem(self, mensagem, sucesso=True):
