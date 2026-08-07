@@ -19,7 +19,7 @@ class Categoria_View:
 
     def configurar_janela(self):
         self.root.title("CRUD de Categorias")
-        self.root.geometry("500x500")
+        self.root.geometry("800x600")
         self.root.resizable(False, False)
 
 
