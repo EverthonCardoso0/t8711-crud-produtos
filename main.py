@@ -258,11 +258,11 @@ class ErpApplication:
         menu_idioma = tk.Menu(menu_principal, tearoff=0)
         menu_idioma.add_command(
             label="Português",
-            command=lambda: self._mudar_idioma("pt")
+            command=self._selecionar_portugues
         )
         menu_idioma.add_command(
             label="English",
-            command=lambda: self._mudar_idioma("en")
+            command=self._selecionar_ingles
         )
         menu_principal.add_cascade(
             label=Idioma.t("menu.idioma"),
@@ -279,6 +279,12 @@ class ErpApplication:
     def _mudar_idioma(self, codigo):
         Idioma.definir(codigo)
         self._criar_menu()
+
+    def _selecionar_portugues(self):
+        self._mudar_idioma("pt")
+
+    def _selecionar_ingles(self):
+        self._mudar_idioma("en")
 
     def _abrir_janela(self, atributo_janela, classe_view, controller):
 
