@@ -107,9 +107,11 @@ class Perfil_View:
             pady = 5,
             sticky = "w"
         )
-        self.txt_descricao = tk.Entry(
+        self.txt_descricao = tk.Text(
             self.frm_dados,
-            width = 60
+            width = 60,
+            height = 3,
+            wrap = "word"
         )
         self.txt_descricao.grid(
             row = 2,
@@ -285,7 +287,7 @@ class Perfil_View:
         )
 
         self.txt_descricao.insert(
-            0,
+            "1.0",
             perfil.descricao
         )
 
@@ -294,7 +296,7 @@ class Perfil_View:
         self.txt_id.delete(0, tk.END)
         self.txt_id.config(state = "readonly")
         self.txt_nome.delete(0, tk.END)
-        self.txt_descricao.delete(0, tk.END)
+        self.txt_descricao.delete("1.0", tk.END)
         self.txt_nome.focus()
 
     def limpar_treeview(self):
@@ -318,7 +320,7 @@ class Perfil_View:
 
     def ler_dados_perfil(self):
         nome = self.txt_nome.get()
-        descricao = self.txt_descricao.get()
+        descricao = self.txt_descricao.get("1.0", tk.END).strip()
         return nome, descricao
 
     def exibir_mensagem(self, mensagem, sucesso=True):
