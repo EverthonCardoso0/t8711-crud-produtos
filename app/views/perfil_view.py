@@ -111,7 +111,8 @@ class Perfil_View:
             self.frm_dados,
             width = 60,
             height = 3,
-            wrap = "word"
+            wrap = "word",
+            font = "TkTextFont"
         )
         self.txt_descricao.grid(
             row = 2,
