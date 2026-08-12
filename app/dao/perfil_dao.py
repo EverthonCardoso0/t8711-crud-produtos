@@ -1,34 +1,26 @@
 from app.dao.dao import DAO
-from app.models.usuario import Usuario
+from app.models.perfil import Perfil
 
 
-class Usuario_DAO(DAO):
+class Perfil_DAO(DAO):
 
-    def __init__(self, database, cidade_dao, perfil_dao):
+    def __init__(self, database):
         super().__init__(database)
-        self._cidade_dao = cidade_dao
-        self._perfil_dao = perfil_dao
 
-    def save(self, usuario):
+    def save(self, perfil):
 
         conexao, cursor = self.conectar()
 
         try:
 
             sql = """
-                    INSERT INTO USUARIO
+                    INSERT INTO PERFIL
                     (
                         NOME,
-                        EMAIL,
-                        DATA_NASCIMENTO,
-                        CIDADE_ID,
-                        PERFIL_ID
+                        DESCRICAO
                     )
                     VALUES
                     (
-                        %s,
-                        %s,
-                        %s,
                         %s,
                         %s
                     )
@@ -37,19 +29,16 @@ class Usuario_DAO(DAO):
             cursor.execute(
                 sql,
                 (
-                    usuario.nome,
-                    usuario.email,
-                    usuario.data_nascimento,
-                    usuario.cidade.id,
-                    usuario.perfil.id
+                    perfil.nome,
+                    perfil.descricao
                 )
             )
 
             conexao.commit()
 
-            usuario.id = cursor.lastrowid
+            perfil.id = cursor.lastrowid
 
-            return usuario
+            return perfil
 
         except Exception:
             conexao.rollback()
@@ -68,12 +57,9 @@ class Usuario_DAO(DAO):
                     SELECT
                         ID,
                         NOME,
-                        EMAIL,
-                        DATA_NASCIMENTO,
-                        CIDADE_ID,
-                        PERFIL_ID
+                        DESCRICAO
                     FROM
-                        USUARIO
+                        PERFIL
                     ORDER BY
                         NOME
                   """
@@ -82,32 +68,21 @@ class Usuario_DAO(DAO):
 
             registros = cursor.fetchall()
 
-            usuarios = []
+            perfis = []
 
             for registro in registros:
 
-                cidade = self._cidade_dao.get_by_id(
-                    registro[4]
-                )
+                perfis.append(
 
-                perfil = self._perfil_dao.get_by_id(
-                    registro[5]
-                )
-
-                usuarios.append(
-
-                    Usuario(
+                    Perfil(
                         registro[0],
                         registro[1],
-                        registro[2],
-                        registro[3],
-                        cidade,
-                        perfil
+                        registro[2]
                     )
 
                 )
 
-            return usuarios
+            return perfis
 
         finally:
             self.desconectar(cursor, conexao)
@@ -122,12 +97,9 @@ class Usuario_DAO(DAO):
                     SELECT
                         ID,
                         NOME,
-                        EMAIL,
-                        DATA_NASCIMENTO,
-                        CIDADE_ID,
-                        PERFIL_ID
+                        DESCRICAO
                     FROM
-                        USUARIO
+                        PERFIL
                     WHERE
                         ID = %s
                   """
@@ -139,40 +111,26 @@ class Usuario_DAO(DAO):
             if registro is None:
                 return None
 
-            cidade = self._cidade_dao.get_by_id(
-                registro[4]
-            )
-
-            perfil = self._perfil_dao.get_by_id(
-                registro[5]
-            )
-
-            return Usuario(
+            return Perfil(
                 registro[0],
                 registro[1],
-                registro[2],
-                registro[3],
-                cidade,
-                perfil
+                registro[2]
             )
 
         finally:
             self.desconectar(cursor, conexao)
 
-    def update(self, usuario):
+    def update(self, perfil):
 
         conexao, cursor = self.conectar()
 
         try:
 
             sql = """
-                    UPDATE USUARIO
+                    UPDATE PERFIL
                     SET
                         NOME = %s,
-                        EMAIL = %s,
-                        DATA_NASCIMENTO = %s,
-                        CIDADE_ID = %s,
-                        PERFIL_ID = %s
+                        DESCRICAO = %s
                     WHERE
                         ID = %s
                   """
@@ -180,12 +138,9 @@ class Usuario_DAO(DAO):
             cursor.execute(
                 sql,
                 (
-                    usuario.nome,
-                    usuario.email,
-                    usuario.data_nascimento,
-                    usuario.cidade.id,
-                    usuario.perfil.id,
-                    usuario.id
+                    perfil.nome,
+                    perfil.descricao,
+                    perfil.id
                 )
             )
 
@@ -208,9 +163,8 @@ class Usuario_DAO(DAO):
 
             sql = """
                     DELETE
-                    FROM USUARIO
-                    WHERE
-                        ID = %s
+                    FROM PERFIL
+                    WHERE ID = %s
                   """
 
             cursor.execute(sql, (id,))
