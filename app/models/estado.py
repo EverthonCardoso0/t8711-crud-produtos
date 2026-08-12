@@ -32,7 +32,7 @@ class Estado:
     def atualizar_dados(self, novo_nome, nova_sigla):
 
         if len(nova_sigla) != 2:
-            raise ValueError("A sigla deve possuir exatamente 2 caracteres.")
+            raise ValueError("estado.erro_sigla_tamanho")
 
         self._nome = novo_nome
         self._sigla = nova_sigla.upper()

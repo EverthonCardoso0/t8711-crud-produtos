@@ -1,4 +1,5 @@
 from app.models.estado import Estado
+from app.core.idioma import Idioma
 
 
 class Estado_Controller:
@@ -20,9 +21,9 @@ class Estado_Controller:
             )
             self.dao.save(estado)
             self.get_all()
-            self.view.exibir_mensagem("Estado cadastrado com sucesso!")
+            self.view.exibir_mensagem(Idioma.t("estado.cadastrado_sucesso"))
         except ValueError as e:
-            self.view.exibir_mensagem(f"Erro: {str(e)}", False)
+            self.view.exibir_mensagem(f"{Idioma.t('comum.erro_prefixo')}{Idioma.t(str(e))}", False)
 
     def get_all(self):
         estados = self.dao.get_all()
@@ -44,19 +45,19 @@ class Estado_Controller:
     def update(self):
         try:
             if self.estado_selecionado is None:
-                self.view.exibir_mensagem("Selecione um estado na lista.", False)
+                self.view.exibir_mensagem(Idioma.t("estado.selecione_da_lista"), False)
                 return
             nome, sigla = self.view.ler_dados_estado()
             self.estado_selecionado.atualizar_dados(nome, sigla)
             self.dao.update(self.estado_selecionado)
             self.get_all()
-            self.view.exibir_mensagem("Estado atualizado com sucesso!")
+            self.view.exibir_mensagem(Idioma.t("estado.atualizado_sucesso"))
         except ValueError as e:
-            self.view.exibir_mensagem(f"Erro: {str(e)}", False)
+            self.view.exibir_mensagem(f"{Idioma.t('comum.erro_prefixo')}{Idioma.t(str(e))}", False)
 
     def delete(self):
         if self.estado_selecionado is None:
-            self.view.exibir_mensagem("Selecione um estado na lista.", False)
+            self.view.exibir_mensagem(Idioma.t("estado.selecione_da_lista"), False)
             return
         if not self.view.confirmar_exclusao():
             return
@@ -66,8 +67,8 @@ class Estado_Controller:
                 self.estado_selecionado = None
                 self.view.limpar_campos()
                 self.get_all()
-                self.view.exibir_mensagem("Estado excluído com sucesso!")
+                self.view.exibir_mensagem(Idioma.t("estado.excluido_sucesso"))
             else:
-                self.view.exibir_mensagem("Estado não encontrado.", False)
+                self.view.exibir_mensagem(Idioma.t("estado.nao_encontrado"), False)
         except Exception as e:
-            self.view.exibir_mensagem("Problemas ao excluir estado", False)
+            self.view.exibir_mensagem(Idioma.t("estado.erro_ao_excluir"), False)

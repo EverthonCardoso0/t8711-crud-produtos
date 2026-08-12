@@ -1,5 +1,6 @@
 from colorama import init
 from app.core.database import Database
+from app.core.idioma import Idioma
 
 # Componentes de Produtos
 from app.dao.produto_dao import Produto_DAO
@@ -206,60 +207,78 @@ class ErpApplication:
 
         menu_cadastros_basicos = tk.Menu(menu_principal, tearoff=0)
         menu_cadastros_basicos.add_command(
-            label="Estados",
+            label=Idioma.t("menu.estados"),
             command=self._abrir_estados
         )
         menu_cadastros_basicos.add_command(
-            label="Cidades",
+            label=Idioma.t("menu.cidades"),
             command=self._abrir_cidades
         )
         menu_principal.add_cascade(
-            label="Cadastros básicos",
+            label=Idioma.t("menu.cadastros_basicos"),
             menu=menu_cadastros_basicos
         )
 
         menu_acessos = tk.Menu(menu_principal, tearoff=0)
         menu_acessos.add_command(
-            label="Usuários",
+            label=Idioma.t("menu.usuarios"),
             command=self._abrir_usuarios
         )
         menu_acessos.add_command(
-            label="Perfis",
+            label=Idioma.t("menu.perfis"),
             command=self._abrir_perfis
         )
         menu_principal.add_cascade(
-            label="Acessos",
+            label=Idioma.t("menu.acessos"),
             menu=menu_acessos
         )
 
         menu_gestao_estoque = tk.Menu(menu_principal, tearoff=0)
         menu_gestao_estoque.add_command(
-            label="Clientes",
+            label=Idioma.t("menu.clientes"),
             command=self._abrir_clientes
         )
         menu_gestao_estoque.add_command(
-            label="Fornecedores",
+            label=Idioma.t("menu.fornecedores"),
             command=self._abrir_fornecedores
         )
         menu_gestao_estoque.add_command(
-            label="Produtos",
+            label=Idioma.t("menu.produtos"),
             command=self._abrir_produtos
         )
         menu_gestao_estoque.add_command(
-            label="Categorias",
+            label=Idioma.t("menu.categorias"),
             command=self._abrir_categorias
         )
         menu_principal.add_cascade(
-            label="Gestão de estoque",
+            label=Idioma.t("menu.gestao_estoque"),
             menu=menu_gestao_estoque
         )
 
+        menu_idioma = tk.Menu(menu_principal, tearoff=0)
+        menu_idioma.add_command(
+            label="Português",
+            command=lambda: self._mudar_idioma("pt")
+        )
+        menu_idioma.add_command(
+            label="English",
+            command=lambda: self._mudar_idioma("en")
+        )
+        menu_principal.add_cascade(
+            label=Idioma.t("menu.idioma"),
+            menu=menu_idioma
+        )
+
         menu_principal.add_command(
-            label="Sair",
+            label=Idioma.t("menu.sair"),
             command=self._root.destroy
         )
 
         self._root.config(menu=menu_principal)
+
+    def _mudar_idioma(self, codigo):
+        Idioma.definir(codigo)
+        self._criar_menu()
 
     def _abrir_janela(self, atributo_janela, classe_view, controller):
 
