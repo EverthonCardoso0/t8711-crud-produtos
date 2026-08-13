@@ -392,6 +392,6 @@ class Fornecedor_View:
     def fechar(self):
         self.root.destroy()
 
-    def iniciar(self):
+    def iniciar(self):  
         self.controller.get_all()
         self.root.mainloop()
