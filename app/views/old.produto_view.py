@@ -5,7 +5,7 @@ init(autoreset=True)
 class Produto_Terminal_View:
     def __init__(self):
         self.titulo_sistema = "=== CRUD DE PRODUTOS (MVC) ==="
-    
+
     def renderizar_menu(self):
         print(Fore.CYAN + Style.BRIGHT + self.titulo_sistema)
         print(f"1 - Cadastrar produto")
@@ -37,7 +37,7 @@ class Produto_Terminal_View:
 
     def ler_id(self):
         return input("Digite o ID do produto: ")
-    
+
     def exibir_fornecedores(self, fornecedores):
         print(Fore.YELLOW + "\n--- FORNECEDORES DISPONÍVEIS ---")
         print(f"{'ID':<4} | {'NOME FANTASIA':<30}")
@@ -47,7 +47,7 @@ class Produto_Terminal_View:
                 f"{fornecedor.id:<4} | {fornecedor.nome_fantasia:<30}"
             )
         print("-" * 40)
-    
+
     def ler_fornecedor(self, fornecedor_existente = None):
         if fornecedor_existente is None:
             return input("Informe o ID do fornecedor: ")
@@ -57,12 +57,6 @@ class Produto_Terminal_View:
         if valor == "":
             return fornecedor_existente
         return valor
-
-
-
-
-
-
 
     def exibir_produtos(self, produtos):
         print(Fore.YELLOW + "\n--- TABELA DE PRODUTOS ---")
@@ -74,7 +68,7 @@ class Produto_Terminal_View:
         for p in produtos:
             print(f"{p.id:<4} | {p.nome:<20} | {p.estoque:<7} | {p.preco:<10.2f} | {p.valor_estoque:<16.2f} | {p.fornecedor.nome_fantasia:<30}")
         print("-"*99)
-    
+
     def exibir_mensagem(self, mensagem, sucesso=True):
         cor = Fore.GREEN if sucesso else Fore.RED
         print(cor + f"\n[STATUS] {mensagem}\n")
@@ -82,5 +76,3 @@ class Produto_Terminal_View:
 
     def aguardar_entrada(self):
         input(Fore.WHITE + "Pressione Enter para continuar...")
-
-

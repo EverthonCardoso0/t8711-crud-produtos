@@ -14,184 +14,92 @@ class Cliente_Controller:
         self.cidade_dao = cidade_dao
         self.estado_dao = estado_dao
         self.view = view
+        self.cliente_selecionado = None
+
+    def new(self):
+        self.view.limpar_campos()
+
+    def carregar_estados(self):
+        estados = self.estado_dao.get_all()
+        self.view.carregar_estados(estados)
+
+    def carregar_cidades_do_estado_selecionado(self, event):
+        id_estado = self.view.get_estado_selecionado_id()
+        if id_estado is None:
+            self.view.carregar_cidades([])
+            return
+        cidades = self.cidade_dao.get_by_estado(id_estado)
+        self.view.carregar_cidades(cidades)
 
     def save(self):
-
-        estados = self.estado_dao.get_all()
-
-        if not estados:
-
-            self.view.exibir_mensagem(
-                "Cadastre um estado antes de cadastrar clientes.",
-                False
+        try:
+            nome, data_nascimento, limite_credito, cidade = self.view.ler_dados_cliente()
+            cliente = Cliente(
+                None,
+                nome,
+                Data_Utils.string_para_data(data_nascimento),
+                limite_credito,
+                cidade
             )
-
-            return
-
-        self.view.exibir_estados(estados)
-
-        id_estado = int(self.view.ler_estado())
-
-        cidades = self.cidade_dao.get_by_estado(id_estado)
-
-        if not cidades:
-
-            self.view.exibir_mensagem(
-                "Não existem cidades cadastradas para esse estado.",
-                False
-            )
-
-            return
-
-        self.view.exibir_cidades(cidades)
-
-        id_cidade = int(self.view.ler_cidade())
-
-        cidade = self.cidade_dao.get_by_id(id_cidade)
-
-        if cidade is None:
-
-            self.view.exibir_mensagem(
-                "Cidade não encontrada.",
-                False
-            )
-
-            return
-
-        nome, data_nascimento, limite_credito = (
-            self.view.ler_dados_cliente()
-        )
-
-        cliente = Cliente(
-            None,
-            nome,
-            Data_Utils.string_para_data(data_nascimento),
-            limite_credito,
-            cidade
-        )
-
-        self.dao.save(cliente)
-
-        self.view.exibir_mensagem(
-            "Cliente cadastrado com sucesso."
-        )
+            self.dao.save(cliente)
+            self.get_all()
+            self.view.exibir_mensagem("Cliente cadastrado com sucesso!")
+        except ValueError as e:
+            self.view.exibir_mensagem(f"Erro: {str(e)}", False)
 
     def get_all(self):
-
         clientes = self.dao.get_all()
-
         self.view.exibir_clientes(clientes)
 
-        self.view.aguardar_entrada()
+    def selecionar_cliente(self, event):
+        try:
+            id_cliente = self.view.get_id_selecionado()
+            self.cliente_selecionado = self.dao.get_by_id(
+                id_cliente
+            )
+            cidades = self.cidade_dao.get_by_estado(
+                self.cliente_selecionado.cidade.estado.id
+            )
+            self.view.preencher_campos(
+                self.cliente_selecionado,
+                cidades
+            )
+
+        except IndexError:
+            pass
 
     def update(self):
-
-        id_cliente = int(self.view.ler_id())
-
-        cliente_existente = self.dao.get_by_id(id_cliente)
-
-        if cliente_existente is None:
-
-            self.view.exibir_mensagem(
-                "Cliente não encontrado.",
-                False
+        try:
+            if self.cliente_selecionado is None:
+                self.view.exibir_mensagem("Selecione um cliente na lista.", False)
+                return
+            nome, data_nascimento, limite_credito, cidade = self.view.ler_dados_cliente()
+            self.cliente_selecionado.atualizar_dados(
+                nome,
+                Data_Utils.string_para_data(data_nascimento),
+                limite_credito,
+                cidade
             )
-
-            return
-
-        estados = self.estado_dao.get_all()
-
-        self.view.exibir_estados(estados)
-
-        id_estado = self.view.ler_estado(
-            cliente_existente.cidade.estado.id
-        )
-
-        cidades = self.cidade_dao.get_by_estado(
-            int(id_estado)
-        )
-
-        self.view.exibir_cidades(cidades)
-
-        id_cidade = self.view.ler_cidade(
-            cliente_existente.cidade.id
-        )
-
-        cidade = self.cidade_dao.get_by_id(
-            int(id_cidade)
-        )
-
-        if cidade is None:
-
-            self.view.exibir_mensagem(
-                "Cidade não encontrada.",
-                False
-            )
-
-            return
-
-        nome, data_nascimento, limite_credito = (
-            self.view.ler_dados_cliente(
-                cliente_existente
-            )
-        )
-
-        cliente_existente.atualizar_dados(
-            nome,
-            Data_Utils.string_para_data(data_nascimento),
-            limite_credito,
-            cidade
-        )
-
-        self.dao.update(cliente_existente)
-
-        self.view.exibir_mensagem(
-            "Cliente atualizado com sucesso."
-        )
+            self.dao.update(self.cliente_selecionado)
+            self.get_all()
+            self.view.exibir_mensagem("Cliente atualizado com sucesso!")
+        except ValueError as e:
+            self.view.exibir_mensagem(f"Erro: {str(e)}", False)
 
     def delete(self):
-
-        id_cliente = int(self.view.ler_id())
-
-        if self.dao.delete(id_cliente):
-
-            self.view.exibir_mensagem(
-                "Cliente excluído com sucesso."
-            )
-
-        else:
-
-            self.view.exibir_mensagem(
-                "Cliente não encontrado.",
-                False
-            )
-
-    def inicializar_sistema(self):
-
-        while True:
-
-            opcao = self.view.renderizar_menu()
-
-            match opcao:
-
-                case 1:
-                    self.save()
-
-                case 2:
-                    self.get_all()
-
-                case 3:
-                    self.update()
-
-                case 4:
-                    self.delete()
-
-                case 0:
-                    break
-
-                case _:
-
-                    self.view.exibir_mensagem(
-                        "Opção inválida.",
-                        False
-                    )
+        if self.cliente_selecionado is None:
+            self.view.exibir_mensagem("Selecione um cliente na lista.", False)
+            return
+        if not self.view.confirmar_exclusao():
+            return
+        try:
+            sucesso = self.dao.delete(self.cliente_selecionado.id)
+            if sucesso:
+                self.cliente_selecionado = None
+                self.view.limpar_campos()
+                self.get_all()
+                self.view.exibir_mensagem("Cliente excluído com sucesso!")
+            else:
+                self.view.exibir_mensagem("Cliente não encontrado.", False)
+        except Exception as e:
+            self.view.exibir_mensagem("Problemas ao excluir cliente", False)

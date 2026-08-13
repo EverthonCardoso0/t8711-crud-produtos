@@ -1,237 +1,107 @@
-import os
-
 from app.models.usuario import Usuario
 from app.core.data_utils import Data_Utils
 
 
 class Usuario_Controller:
 
-    def __init__(self, dao, cidade_dao, estado_dao, view):
+    def __init__(self, dao, cidade_dao, estado_dao, perfil_dao, view):
         self.dao = dao
         self.cidade_dao = cidade_dao
         self.estado_dao = estado_dao
+        self.perfil_dao = perfil_dao
         self.view = view
+        self.usuario_selecionado = None
+
+    def new(self):
+        self.view.limpar_campos()
+
+    def carregar_estados(self):
+        estados = self.estado_dao.get_all()
+        self.view.carregar_estados(estados)
+
+    def carregar_perfis(self):
+        perfis = self.perfil_dao.get_all()
+        self.view.carregar_perfis(perfis)
+
+    def carregar_cidades_do_estado_selecionado(self, event):
+        id_estado = self.view.get_estado_selecionado_id()
+        if id_estado is None:
+            self.view.carregar_cidades([])
+            return
+        cidades = self.cidade_dao.get_by_estado(id_estado)
+        self.view.carregar_cidades(cidades)
 
     def save(self):
-
         try:
-            estados = self.estado_dao.get_all()
-            if not estados:
-
-                self.view.exibir_mensagem(
-                    "Cadastre um estado antes de cadastrar usuários.",
-                    False
-                )
-                return
-
-            self.view.exibir_estados(estados)
-            id_estado = int(self.view.ler_estado())
-            cidades = self.cidade_dao.get_by_estado(id_estado)
-            if not cidades:
-
-                self.view.exibir_mensagem(
-                    "Não existem cidades cadastradas para esse estado.",
-                    False
-                )
-
-                return
-
-            self.view.exibir_cidades(cidades)
-
-            id_cidade = int(self.view.ler_cidade())
-
-            cidade = self.cidade_dao.get_by_id(id_cidade)
-
-            if cidade is None:
-
-                self.view.exibir_mensagem(
-                    "Cidade não encontrada.",
-                    False
-                )
-
-                return
-
-            nome, email, data_nascimento = self.view.ler_dados_usuario()
-
+            nome, email, data_nascimento, cidade, perfil = self.view.ler_dados_usuario()
             usuario = Usuario(
                 None,
                 nome,
                 email,
                 Data_Utils.string_para_data(data_nascimento),
-                cidade
+                cidade,
+                perfil
             )
-
             self.dao.save(usuario)
-
-            self.view.exibir_mensagem(
-                "Usuário cadastrado com sucesso!"
-            )
-
-        except ValueError:
-
-            self.view.exibir_mensagem(
-                "Erro: Entrada inválida. Tente novamente.",
-                False
-            )
-
-        except KeyboardInterrupt:
-
-            self.view.exibir_mensagem(
-                "Operação cancelada pelo usuário.",
-                False
-            )
+            self.get_all()
+            self.view.exibir_mensagem("Usuário cadastrado com sucesso!")
+        except ValueError as e:
+            self.view.exibir_mensagem(f"Erro: {str(e)}", False)
 
     def get_all(self):
-
         usuarios = self.dao.get_all()
-
         self.view.exibir_usuarios(usuarios)
 
-        self.view.aguardar_entrada()
+    def selecionar_usuario(self, event):
+        try:
+            id_usuario = self.view.get_id_selecionado()
+            self.usuario_selecionado = self.dao.get_by_id(
+                id_usuario
+            )
+            cidades = self.cidade_dao.get_by_estado(
+                self.usuario_selecionado.cidade.estado.id
+            )
+            self.view.preencher_campos(
+                self.usuario_selecionado,
+                cidades
+            )
+
+        except IndexError:
+            pass
 
     def update(self):
-
         try:
-
-            usuarios = self.dao.get_all()
-
-            self.view.exibir_usuarios(usuarios)
-
-            id_usuario = int(self.view.ler_id())
-
-            usuario_existente = self.dao.get_by_id(id_usuario)
-
-            if usuario_existente is None:
-
-                self.view.exibir_mensagem(
-                    "Usuário não encontrado.",
-                    False
-                )
-
+            if self.usuario_selecionado is None:
+                self.view.exibir_mensagem("Selecione um usuário na lista.", False)
                 return
-
-            estados = self.estado_dao.get_all()
-
-            self.view.exibir_estados(estados)
-
-            id_estado = self.view.ler_estado(
-                usuario_existente.cidade.estado.id
-            )
-
-            cidades = self.cidade_dao.get_by_estado(
-                int(id_estado)
-            )
-
-            if not cidades:
-
-                self.view.exibir_mensagem(
-                    "Não existem cidades cadastradas para esse estado.",
-                    False
-                )
-
-                return
-
-            self.view.exibir_cidades(cidades)
-
-            id_cidade = self.view.ler_cidade(
-                usuario_existente.cidade.id
-            )
-
-            cidade = self.cidade_dao.get_by_id(
-                int(id_cidade)
-            )
-
-            if cidade is None:
-
-                self.view.exibir_mensagem(
-                    "Cidade não encontrada.",
-                    False
-                )
-
-                return
-
-            nome, email, data_nascimento = self.view.ler_dados_usuario(
-                usuario_existente
-            )
-
-            usuario_existente.atualizar_dados(
+            nome, email, data_nascimento, cidade, perfil = self.view.ler_dados_usuario()
+            self.usuario_selecionado.atualizar_dados(
                 nome,
                 email,
                 Data_Utils.string_para_data(data_nascimento),
-                cidade
+                cidade,
+                perfil
             )
-
-            self.dao.update(usuario_existente)
-
-            self.view.exibir_mensagem(
-                "Usuário atualizado com sucesso!"
-            )
-
+            self.dao.update(self.usuario_selecionado)
+            self.get_all()
+            self.view.exibir_mensagem("Usuário atualizado com sucesso!")
         except ValueError as e:
-
-            self.view.exibir_mensagem(
-                f"Erro: {str(e)}",
-                False
-            )
+            self.view.exibir_mensagem(f"Erro: {str(e)}", False)
 
     def delete(self):
-
+        if self.usuario_selecionado is None:
+            self.view.exibir_mensagem("Selecione um usuário na lista.", False)
+            return
+        if not self.view.confirmar_exclusao():
+            return
         try:
-
-            usuarios = self.dao.get_all()
-
-            self.view.exibir_usuarios(usuarios)
-
-            id_usuario = int(self.view.ler_id())
-
-            sucesso = self.dao.delete(id_usuario)
-
+            sucesso = self.dao.delete(self.usuario_selecionado.id)
             if sucesso:
-
-                self.view.exibir_mensagem(
-                    "Usuário excluído com sucesso!"
-                )
-
-            else:
-
-                self.view.exibir_mensagem(
-                    "Usuário não encontrado.",
-                    False
-                )
-
-        except ValueError:
-
-            self.view.exibir_mensagem(
-                "Erro: ID inválido.",
-                False
-            )
-
-    def inicializar_sistema(self):
-
-        while True:
-
-            os.system("cls" if os.name == "nt" else "clear")
-
-            opcao = self.view.renderizar_menu()
-
-            if opcao == 0:
-                break
-
-            elif opcao == 1:
-                self.save()
-
-            elif opcao == 2:
+                self.usuario_selecionado = None
+                self.view.limpar_campos()
                 self.get_all()
-
-            elif opcao == 3:
-                self.update()
-
-            elif opcao == 4:
-                self.delete()
-
+                self.view.exibir_mensagem("Usuário excluído com sucesso!")
             else:
-
-                self.view.exibir_mensagem(
-                    "Opção inválida. Tente novamente.",
-                    False
-                )
+                self.view.exibir_mensagem("Usuário não encontrado.", False)
+        except Exception as e:
+            self.view.exibir_mensagem("Problemas ao excluir usuário", False)

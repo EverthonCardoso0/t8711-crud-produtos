@@ -1,155 +1,75 @@
-import os
 from app.models.estado import Estado
+from app.core.idioma import Idioma
 
 
 class Estado_Controller:
-
     def __init__(self, dao, view):
         self.dao = dao
         self.view = view
+        self.estado_selecionado = None
 
-    def save(self):
+    def new(self):
         self.view.limpar_campos()
 
+    def save(self):
+
         try:
-
             nome, sigla = self.view.ler_dados_estado()
-
             estado = Estado(
                 None,
                 nome,
                 sigla
             )
-
             self.dao.save(estado)
-
-            self.view.exibir_mensagem(
-                "Estado cadastrado com sucesso!"
-            )
-
+            self.get_all()
+            self.view.exibir_mensagem(Idioma.t("estado.cadastrado_sucesso"))
         except ValueError as e:
-
-            self.view.exibir_mensagem(
-                f"Erro: {str(e)}",
-                False
-            )
-
-        except KeyboardInterrupt:
-
-            self.view.exibir_mensagem(
-                "Operação cancelada pelo usuário.",
-                False
-            )
+            self.view.exibir_mensagem(f"{Idioma.t('comum.erro_prefixo')}{Idioma.t(str(e))}", False)
 
     def get_all(self):
-
         estados = self.dao.get_all()
-
         self.view.exibir_estados(estados)
 
-        self.view.aguardar_entrada()
+    def selecionar_estado(self, event):
+        try:
+            id_estado = self.view.get_id_selecionado()
+            self.estado_selecionado = self.dao.get_by_id(
+                id_estado
+            )
+            self.view.preencher_campos(
+                self.estado_selecionado
+            )
+
+        except IndexError:
+            pass
 
     def update(self):
-
         try:
-
-            estados = self.dao.get_all()
-
-            self.view.exibir_estados(estados)
-
-            id_estado = int(self.view.ler_id())
-
-            estado_existente = self.dao.get_by_id(id_estado)
-
-            if estado_existente is None:
-
-                self.view.exibir_mensagem(
-                    "Estado não encontrado.",
-                    False
-                )
-
+            if self.estado_selecionado is None:
+                self.view.exibir_mensagem(Idioma.t("estado.selecione_da_lista"), False)
                 return
-
-            nome, sigla = self.view.ler_dados_estado(
-                estado_existente
-            )
-
-            estado_existente.atualizar_dados(
-                nome,
-                sigla
-            )
-
-            self.dao.update(estado_existente)
-
-            self.view.exibir_mensagem(
-                "Estado atualizado com sucesso!"
-            )
-
+            nome, sigla = self.view.ler_dados_estado()
+            self.estado_selecionado.atualizar_dados(nome, sigla)
+            self.dao.update(self.estado_selecionado)
+            self.get_all()
+            self.view.exibir_mensagem(Idioma.t("estado.atualizado_sucesso"))
         except ValueError as e:
-
-            self.view.exibir_mensagem(
-                f"Erro: {str(e)}",
-                False
-            )
+            self.view.exibir_mensagem(f"{Idioma.t('comum.erro_prefixo')}{Idioma.t(str(e))}", False)
 
     def delete(self):
-
+        if self.estado_selecionado is None:
+            self.view.exibir_mensagem(Idioma.t("estado.selecione_da_lista"), False)
+            return
+        if not self.view.confirmar_exclusao():
+            return
         try:
-
-            estados = self.dao.get_all()
-
-            self.view.exibir_estados(estados)
-
-            id_estado = int(self.view.ler_id())
-
-            sucesso = self.dao.delete(id_estado)
-
+            sucesso = self.dao.delete(self.estado_selecionado.id)
             if sucesso:
-
-                self.view.exibir_mensagem(
-                    "Estado excluído com sucesso!"
-                )
-
-            else:
-
-                self.view.exibir_mensagem(
-                    "Estado não encontrado.",
-                    False
-                )
-
-        except ValueError:
-
-            self.view.exibir_mensagem(
-                "Erro: ID inválido.",
-                False
-            )
-
-    def inicializar_sistema(self):
-
-        while True:
-
-            os.system('cls' if os.name == 'nt' else 'clear')
-
-            opcao = self.view.renderizar_menu()
-
-            if opcao == 0:
-                break
-
-            elif opcao == 1:
-                self.save()
-
-            elif opcao == 2:
+                self.estado_selecionado = None
+                self.view.limpar_campos()
                 self.get_all()
-
-            elif opcao == 3:
-                self.update()
-
-            elif opcao == 4:
-                self.delete()
-
+                self.view.exibir_mensagem(Idioma.t("estado.excluido_sucesso"))
             else:
-
-                self.view.exibir_mensagem(
-                    "Opção inválida.",
-                    False
-                )
+                self.view.exibir_mensagem(Idioma.t("estado.nao_encontrado"), False)
+        except Exception as e:
+            self.view.exibir_mensagem(Idioma.t("estado.erro_ao_excluir"), False)

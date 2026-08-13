@@ -1,11 +1,16 @@
-import os
-from colorama import init, Fore, Style
+from colorama import init
 from app.core.database import Database
+from app.core.idioma import Idioma
 
 # Componentes de Produtos
 from app.dao.produto_dao import Produto_DAO
 from app.views.produto_view import Produto_View
 from app.controllers.produto_controller import Produto_Controller
+
+# Componentes de Categorias
+from app.dao.categoria_dao import Categoria_DAO
+from app.views.categoria_view import Categoria_View
+from app.controllers.categoria_controller import Categoria_Controller
 
 # Componentes de Estados
 from app.dao.estado_dao import Estado_DAO
@@ -14,25 +19,34 @@ from app.controllers.estado_controller import Estado_Controller
 
 # Componentes de Cidades
 from app.dao.cidade_dao import Cidade_DAO
-from app.views.cidade_view import Cidade_Terminal_View
+from app.views.cidade_view import Cidade_View
 from app.controllers.cidade_controller import Cidade_Controller
 
 # Componentes de Fornecedores
 from app.dao.fornecedor_dao import Fornecedor_DAO
+from app.dao.fornecedor_categoria_dao import Fornecedor_Categoria_DAO
 from app.views.fornecedor_view import Fornecedor_View
 from app.controllers.fornecedor_controller import Fornecedor_Controller
 
+# Componentes de Perfis
+from app.dao.perfil_dao import Perfil_DAO
+from app.dao.perfil_fornecedor_dao import Perfil_Fornecedor_DAO
+from app.views.perfil_view import Perfil_View
+from app.controllers.perfil_controller import Perfil_Controller
+
 # Componentes de Usuários
 from app.dao.usuario_dao import Usuario_DAO
-from app.views.usuario_view import Usuario_Terminal_View
+from app.views.usuario_view import Usuario_View
 from app.controllers.usuario_controller import Usuario_Controller
 
 # Componentes de Clientes
 from app.dao.cliente_dao import Cliente_DAO
-from app.views.cliente_view import Cliente_Terminal_View
+from app.views.cliente_view import Cliente_View
 from app.controllers.cliente_controller import Cliente_Controller
 
 import tkinter as tk
+
+
 class ErpApplication:
 
     def __init__(self):
@@ -40,6 +54,19 @@ class ErpApplication:
         init(autoreset=True)
 
         self._database = Database()
+
+        self._root = tk.Tk()
+
+        self._janela_estados = None
+        self._janela_cidades = None
+        self._janela_fornecedores = None
+        self._janela_produtos = None
+        self._janela_categorias = None
+        self._janela_perfis = None
+        self._janela_usuarios = None
+        self._janela_clientes = None
+
+        self._configurar_janela()
 
         # ===========================
         # ESTADOS
@@ -65,7 +92,20 @@ class ErpApplication:
         self._ctrl_cidades = Cidade_Controller(
             dao=self._dao_cidades,
             estado_dao=self._dao_estados,
-            view=Cidade_Terminal_View()
+            view=None
+        )
+
+        # ===========================
+        # CATEGORIAS
+        # ===========================
+
+        self._dao_categorias = Categoria_DAO(
+            self._database
+        )
+
+        self._ctrl_categorias = Categoria_Controller(
+            dao=self._dao_categorias,
+            view=None
         )
 
         # ===========================
@@ -76,8 +116,14 @@ class ErpApplication:
             self._database
         )
 
+        self._dao_fornecedor_categorias = Fornecedor_Categoria_DAO(
+            self._database
+        )
+
         self._ctrl_fornecedores = Fornecedor_Controller(
             dao=self._dao_fornecedores,
+            categoria_dao=self._dao_categorias,
+            fornecedor_categoria_dao=self._dao_fornecedor_categorias,
             view=None
         )
 
@@ -99,19 +145,40 @@ class ErpApplication:
         )
 
         # ===========================
+        # PERFIS
+        # ===========================
+
+        self._dao_perfis = Perfil_DAO(
+            self._database
+        )
+
+        self._dao_perfil_fornecedores = Perfil_Fornecedor_DAO(
+            self._database
+        )
+
+        self._ctrl_perfis = Perfil_Controller(
+            dao=self._dao_perfis,
+            fornecedor_dao=self._dao_fornecedores,
+            perfil_fornecedor_dao=self._dao_perfil_fornecedores,
+            view=None
+        )
+
+        # ===========================
         # USUÁRIOS
         # ===========================
 
         self._dao_usuarios = Usuario_DAO(
             self._database,
-            self._dao_cidades
+            self._dao_cidades,
+            self._dao_perfis
         )
 
         self._ctrl_usuarios = Usuario_Controller(
             dao=self._dao_usuarios,
             cidade_dao=self._dao_cidades,
             estado_dao=self._dao_estados,
-            view=Usuario_Terminal_View()
+            perfil_dao=self._dao_perfis,
+            view=None
         )
 
         # ===========================
@@ -127,90 +194,145 @@ class ErpApplication:
             dao=self._dao_clientes,
             cidade_dao=self._dao_cidades,
             estado_dao=self._dao_estados,
-            view=Cliente_Terminal_View()
+            view=None
         )
 
-    def _renderizar_menu_principal(self):
+        self._criar_menu()
 
-        os.system("cls" if os.name == "nt" else "clear")
+    def _configurar_janela(self):
+        self._root.title("Sistema Corporativo ERP")
+        self._root.state("zoomed")
 
-        print(Fore.GREEN + Style.BRIGHT + "=== SISTEMA CORPORATIVO ERP ===")
-        print("1 - Gerenciar Produtos")
-        print("2 - Gerenciar Fornecedores")
-        print("3 - Gerenciar Usuários")
-        print("4 - Gerenciar Clientes")
-        print("5 - Gerenciar Estados")
-        print("6 - Gerenciar Cidades")
-        print("0 - Sair do Sistema")
-        print(Fore.GREEN + "=" * 34)
+    def _criar_menu(self):
 
-        try:
-            return int(input("Escolha o módulo: "))
-        except ValueError:
-            return -1
+        menu_principal = tk.Menu(self._root)
+
+        menu_cadastros_basicos = tk.Menu(menu_principal, tearoff=0)
+        menu_cadastros_basicos.add_command(
+            label=Idioma.t("menu.estados"),
+            command=self._abrir_estados
+        )
+        menu_cadastros_basicos.add_command(
+            label=Idioma.t("menu.cidades"),
+            command=self._abrir_cidades
+        )
+        menu_principal.add_cascade(
+            label=Idioma.t("menu.cadastros_basicos"),
+            menu=menu_cadastros_basicos
+        )
+
+        menu_acessos = tk.Menu(menu_principal, tearoff=0)
+        menu_acessos.add_command(
+            label=Idioma.t("menu.usuarios"),
+            command=self._abrir_usuarios
+        )
+        menu_acessos.add_command(
+            label=Idioma.t("menu.perfis"),
+            command=self._abrir_perfis
+        )
+        menu_principal.add_cascade(
+            label=Idioma.t("menu.acessos"),
+            menu=menu_acessos
+        )
+
+        menu_gestao_estoque = tk.Menu(menu_principal, tearoff=0)
+        menu_gestao_estoque.add_command(
+            label=Idioma.t("menu.clientes"),
+            command=self._abrir_clientes
+        )
+        menu_gestao_estoque.add_command(
+            label=Idioma.t("menu.fornecedores"),
+            command=self._abrir_fornecedores
+        )
+        menu_gestao_estoque.add_command(
+            label=Idioma.t("menu.produtos"),
+            command=self._abrir_produtos
+        )
+        menu_gestao_estoque.add_command(
+            label=Idioma.t("menu.categorias"),
+            command=self._abrir_categorias
+        )
+        menu_principal.add_cascade(
+            label=Idioma.t("menu.gestao_estoque"),
+            menu=menu_gestao_estoque
+        )
+
+        menu_idioma = tk.Menu(menu_principal, tearoff=0)
+        menu_idioma.add_command(
+            label="Português",
+            command=self._selecionar_portugues
+        )
+        menu_idioma.add_command(
+            label="English",
+            command=self._selecionar_ingles
+        )
+        menu_principal.add_cascade(
+            label=Idioma.t("menu.idioma"),
+            menu=menu_idioma
+        )
+
+        menu_principal.add_command(
+            label=Idioma.t("menu.sair"),
+            command=self._root.destroy
+        )
+
+        self._root.config(menu=menu_principal)
+
+    def _mudar_idioma(self, codigo):
+        Idioma.definir(codigo)
+        self._criar_menu()
+
+    def _selecionar_portugues(self):
+        self._mudar_idioma("pt")
+
+    def _selecionar_ingles(self):
+        self._mudar_idioma("en")
+
+    def _abrir_janela(self, atributo_janela, classe_view, controller):
+
+        janela_existente = getattr(self, atributo_janela)
+
+        if janela_existente is not None and janela_existente.winfo_exists():
+            janela_existente.lift()
+            janela_existente.focus_force()
+            return
+
+        janela = tk.Toplevel(self._root)
+        setattr(self, atributo_janela, janela)
+
+        controller.view = classe_view(janela, controller)
+        controller.view.iniciar()
+
+    def _abrir_estados(self):
+        self._abrir_janela("_janela_estados", Estado_View, self._ctrl_estados)
+
+    def _abrir_cidades(self):
+        self._abrir_janela("_janela_cidades", Cidade_View, self._ctrl_cidades)
+
+    def _abrir_fornecedores(self):
+        self._abrir_janela("_janela_fornecedores", Fornecedor_View, self._ctrl_fornecedores)
+
+    def _abrir_produtos(self):
+        self._abrir_janela("_janela_produtos", Produto_View, self._ctrl_produtos)
+
+    def _abrir_categorias(self):
+        self._abrir_janela("_janela_categorias", Categoria_View, self._ctrl_categorias)
+
+    def _abrir_perfis(self):
+        self._abrir_janela("_janela_perfis", Perfil_View, self._ctrl_perfis)
+
+    def _abrir_usuarios(self):
+        self._abrir_janela("_janela_usuarios", Usuario_View, self._ctrl_usuarios)
+
+    def _abrir_clientes(self):
+        self._abrir_janela("_janela_clientes", Cliente_View, self._ctrl_clientes)
 
     def run(self):
-        
-          
-        while True:
+        self._root.mainloop()
 
-            opcao = self._renderizar_menu_principal()
-
-            if opcao == 0:
-
-                print("\nEncerrando sistema corporativo...")
-                break
-
-            elif opcao == 1:
-                janela_produtos = tk.Tk()
-                self._ctrl_produtos.view = Produto_View(
-                    janela_produtos,
-                    self._ctrl_produtos
-                )
-                self._ctrl_produtos.view.iniciar()
-
-            elif opcao == 2:
-                janela_fornecedores = tk.Tk()
-                self._ctrl_fornecedores.view = Fornecedor_View(
-                    janela_fornecedores,
-                    self._ctrl_fornecedores
-                )                
-                self._ctrl_fornecedores.view.iniciar()
-                
-
-            elif opcao == 3:
-
-                self._ctrl_usuarios.inicializar_sistema()
-
-            elif opcao == 4:
-
-                self._ctrl_clientes.inicializar_sistema()
-
-            elif opcao == 5:
-                janela_estados = tk.Tk()
-                self._ctrl_estados.view = Estado_View(
-                    janela_estados,
-                    self._ctrl_estados
-                )
-                self._ctrl_estados.view.iniciar()
-
-            elif opcao == 6:
-
-                self._ctrl_cidades.inicializar_sistema()
-
-            else:
-
-                print(Fore.RED + "\nOpção inválida!")
-
-                input(
-                    Fore.WHITE +
-                    "Pressione Enter para continuar..."
-                )
-    
 
 if __name__ == "__main__":
 
     app = ErpApplication()
 
     app.run()
-

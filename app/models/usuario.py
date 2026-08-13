@@ -1,4 +1,5 @@
 from app.models.cidade import Cidade
+from app.models.perfil import Perfil
 from app.core.data_utils import Data_Utils
 
 
@@ -10,13 +11,15 @@ class Usuario:
         nome,
         email,
         data_nascimento,
-        cidade: Cidade
+        cidade: Cidade,
+        perfil: Perfil
     ):
         self._id = id
         self._nome = nome
         self._email = email
         self._data_nascimento = data_nascimento
         self._cidade = cidade
+        self._perfil = perfil
 
     @property
     def id(self):
@@ -59,6 +62,14 @@ class Usuario:
         self._cidade = nova_cidade
 
     @property
+    def perfil(self):
+        return self._perfil
+
+    @perfil.setter
+    def perfil(self, novo_perfil):
+        self._perfil = novo_perfil
+
+    @property
     def idade(self):
         return Data_Utils.calcular_idade(self._data_nascimento)
 
@@ -67,9 +78,11 @@ class Usuario:
         novo_nome,
         novo_email,
         nova_data_nascimento,
-        nova_cidade
+        nova_cidade,
+        novo_perfil
     ):
         self._nome = novo_nome
         self._email = novo_email
         self._data_nascimento = nova_data_nascimento
         self._cidade = nova_cidade
+        self._perfil = novo_perfil
